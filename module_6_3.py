@@ -1,94 +1,78 @@
 import random
 
-# Родительский класс Animal
+# Класс Animal — базовый для всех животных
 class Animal:
     live = True
     sound = None
-    _DEGREE_OF_DANGER = 0  # Уровень опасности
+    _DEGREE_OF_DANGER = 0
 
     def __init__(self, speed):
-        self._cords = [0, 0, 0]  # Координаты в пространстве
-        self.speed = speed  # Скорость передвижения
+        self._cords = [0, 0, 0]  # Координаты
+        self.speed = speed       # Скорость
 
     def move(self, dx, dy, dz):
-        """Изменение координат с учетом скорости."""
-        if self._cords[2] + dz * self.speed < 0:
-            print("It's too deep, i can't dive :(")
-            return
+        # Перемещаем животное, умножая на скорость
         self._cords[0] += dx * self.speed
         self._cords[1] += dy * self.speed
-        self._cords[2] += dz * self.speed
+        new_z = self._cords[2] + dz * self.speed
+        if new_z < 0:
+            print("I'm moving underwater!")
+        self._cords[2] = new_z
 
     def get_cords(self):
-        """Вывод текущих координат."""
         print(f"X: {self._cords[0]} Y: {self._cords[1]} Z: {self._cords[2]}")
 
     def attack(self):
-        """Атака в зависимости от степени опасности."""
         if self._DEGREE_OF_DANGER < 5:
             print("Sorry, i'm peaceful :)")
         else:
             print("Be careful, i'm attacking you 0_0")
 
     def speak(self):
-        """Издает звук."""
         if self.sound:
             print(self.sound)
         else:
-            print("...")
+            print("I have nothing to say...")
 
-# Класс Bird
+# Класс Bird — описывает птиц
 class Bird(Animal):
-    beak = True  # Наличие клюва
+    beak = True
 
     def lay_eggs(self):
-        """Откладывает яйца."""
-        eggs = random.randint(1, 4)
-        print(f"Here are(is) {eggs} eggs for you")
+        print(f"Here are(is) {random.randint(1, 4)} eggs for you")
 
-# Класс AquaticAnimal
+# Класс AquaticAnimal — описывает плавающих животных
 class AquaticAnimal(Animal):
-    _DEGREE_OF_DANGER = 3  # Уровень опасности
+    _DEGREE_OF_DANGER = 3
 
     def dive_in(self, dz):
-        """Ныряет, изменяя координату Z."""
-        dz = abs(dz)  # Берем модуль dz
-        if self._cords[2] - dz * (self.speed / 2) < 0:
-            print("It's too deep, i can't dive :(")
-            return
-        self._cords[2] -= dz * (self.speed / 2)
+        dz = abs(dz)  # Берем модуль глубины
+        self._cords[2] -= dz * (self.speed / 2)  # Уменьшаем координату z
+        print("I'm diving deeper!")
 
-# Класс PoisonousAnimal
+# Класс PoisonousAnimal — описывает ядовитых животных
 class PoisonousAnimal(Animal):
-    _DEGREE_OF_DANGER = 8  # Уровень опасности
+    _DEGREE_OF_DANGER = 8
 
-# Класс Duckbill (утконос)
-class Duckbill(Bird, AquaticAnimal, PoisonousAnimal):
-    sound = "Click-click-click"  # Звук утконоса
+# Класс Duckbill — утконос, наследуется от PoisonousAnimal, Bird и AquaticAnimal
+class Duckbill(PoisonousAnimal, Bird, AquaticAnimal):
+    sound = "Click-click-click"
 
     def __init__(self, speed):
-        super().__init__(speed)  # Инициализация через Animal
+        super().__init__(speed)  # Инициализируем через самый первый класс в MRO
 
-# Пример работы программы
+# Тестирование
 db = Duckbill(10)
 
-# Проверка свойств
-print(db.live)  # Утконос жив
-print(db.beak)  # Утконос имеет клюв
+print(db.live)  # True
+print(db.beak)  # True
 
-# Утконос издает звук
-db.speak()
+db.speak()      # Click-click-click
+db.attack()     # Be careful, i'm attacking you 0_0
 
-# Утконос атакует
-db.attack()
+db.move(1, 2, 3)  # Перемещение утконоса
+db.get_cords()    # X: 10 Y: 20 Z: 30
+db.dive_in(6)     # Ныряние утконоса
+db.get_cords()    # X: 10 Y: 20 Z: 15 (или меньше, в зависимости от глубины)
 
-# Утконос перемещается
-db.move(1, 2, 3)
-db.get_cords()
-
-# Утконос ныряет
-db.dive_in(6)
-db.get_cords()
-
-# Утконос откладывает яйца
-db.lay_eggs()
+db.lay_eggs()     # Here are(is) <случайное число от 1 до 4> eggs for you
