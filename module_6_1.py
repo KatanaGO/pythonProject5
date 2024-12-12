@@ -1,68 +1,57 @@
-# Родительский класс Animal
+# Родительский класс для животных
 class Animal:
-    def __init__(self, name):
-        self.name = name
-        self.alive = True  # Живой
-        self.fed = False   # Накормленный
+    alive = True  # Атрибут класса: живой
+    fed = False   # Атрибут класса: накормленный
 
-# Родительский класс Plant
+    def __init__(self, name):
+        self.name = name  # Имя животного
+
+    def eat(self, food):
+        if isinstance(food, Plant):  # Проверяем, что food является растением
+            if food.edible:  # Если растение съедобное
+                print(f"{self.name} съел {food.name}")
+                self.__class__.fed = True  # Меняем класс-атрибут fed на True
+            else:  # Если растение несъедобное
+                print(f"{self.name} не стал есть {food.name}")
+                self.__class__.alive = False  # Меняем класс-атрибут alive на False
+        else:
+            print("Это не растение!")
+
+# Родительский класс для растений
 class Plant:
-    def __init__(self, name):
-        self.name = name
-        self.edible = False  # Съедобность
+    edible = False  # Атрибут класса: съедобность
 
-# Класс Mammal, наследник Animal
+    def __init__(self, name):
+        self.name = name  # Имя растения
+
+# Класс "Млекопитающие" (наследник Animal)
 class Mammal(Animal):
-    def eat(self, food):
-        if isinstance(food, Plant):  # Проверяем, является ли объект растением
-            if food.edible:  # Если растение съедобное
-                print(f"{self.name} съел {food.name}")
-                self.fed = True
-            else:  # Если растение несъедобное
-                print(f"{self.name} не стал есть {food.name}")
-                self.alive = False
+    pass  # Поведение полностью унаследовано от Animal
 
-# Класс Predator, наследник Animal
+# Класс "Хищник" (наследник Animal)
 class Predator(Animal):
-    def eat(self, food):
-        if isinstance(food, Plant):  # Проверяем, является ли объект растением
-            if food.edible:  # Если растение съедобное
-                print(f"{self.name} съел {food.name}")
-                self.fed = True
-            else:  # Если растение несъедобное
-                print(f"{self.name} не стал есть {food.name}")
-                self.alive = False
+    pass  # Поведение полностью унаследовано от Animal
 
-# Класс Flower, наследник Plant
+# Класс "Цветок" (наследник Plant)
 class Flower(Plant):
-    def __init__(self, name):
-        super().__init__(name)  # Наследуем атрибуты от Plant
+    pass  # Цветы остаются несъедобными, ничего менять не нужно
 
-# Класс Fruit, наследник Plant
+# Класс "Фрукт" (наследник Plant)
 class Fruit(Plant):
-    def __init__(self, name):
-        super().__init__(name)
-        self.edible = True  # Переопределяем атрибут edible на True
+    edible = True  # Переопределяем атрибут класса: фрукты съедобны
 
-# Создание объектов
+# Тестирование
 a1 = Predator('Волк с Уолл-Стрит')
 a2 = Mammal('Хатико')
 p1 = Flower('Цветик семицветик')
 p2 = Fruit('Заводной апельсин')
 
-# Вывод названий объектов
-print(a1.name)  # Волк с Уолл-Стрит
-print(p1.name)  # Цветик семицветик
+print(a1.name)  # Вывод: Волк с Уолл-Стрит
+print(p1.name)  # Вывод: Цветик семицветик
 
-# Проверка начальных значений атрибутов
-print(a1.alive)  # True
-print(a2.fed)    # False
-
-# Хищник пытается съесть цветок
-a1.eat(p1)  # Волк с Уолл-Стрит не стал есть Цветик семицветик
-# Млекопитающее ест фрукт
-a2.eat(p2)  # Хатико съел Заводной апельсин
-
-# Проверка конечных значений атрибутов
-print(a1.alive)  # False
-print(a2.fed)    # True
+print(a1.alive)  # Вывод: True
+print(a2.fed)    # Вывод: False
+a1.eat(p1)       # Вывод: Волк с Уолл-Стрит не стал есть Цветик семицветик
+a2.eat(p2)       # Вывод: Хатико съел Заводной апельсин
+print(a1.alive)  # Вывод: False
+print(a2.fed)    # Вывод: True
